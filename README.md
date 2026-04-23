@@ -4,6 +4,10 @@ A Python and Streamlit-based text rewriting tool that uses strict rule-based NLP
 
 Crafted with intention by **Shlok Tilokani** — because your words deserve to sound like yours.
 
+## Acknowledgments
+
+This service was built using methods and inspiration from this YouTube tutorial: [https://youtu.be/LDEBs9Qw1aU](https://youtu.be/LDEBs9Qw1aU)
+
 ## Features
 
 This project implements the **Dr. Marcin Kriukow methodology** for humanizing AI-generated content through an 8-step pipeline:
