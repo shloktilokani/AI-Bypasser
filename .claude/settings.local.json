@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python.exe paraphraser.py)",
+      "Bash(.venv/Scripts/streamlit.exe run *)"
+    ]
+  }
+}

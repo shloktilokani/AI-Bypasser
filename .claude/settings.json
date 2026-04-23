@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(.claude/memory.md)",
+      "Write(.claude/memory.md)",
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Bash(d:/AI_Plagrism_Bypasser/.venv/Scripts/pip.exe freeze *)"
+    ],
+    "additionalDirectories": [
+      "d:\\AI_Plagrism_Bypasser",
+      "C:\\Users\\stilokani\\.claude\\projects\\d--AI-Plagrism-Bypasser\\memory"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -c \"import json; content = open('.claude/memory.md', encoding='utf-8').read(); print(json.dumps({'hookSpecificOutput': {'hookEventName': 'UserPromptSubmit', 'additionalContext': '=== Project Memory (.claude/memory.md) ===\\n' + content}}))\" 2>/dev/null || true",
+            "statusMessage": "Loading project memory..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"REQUIRED: You must now update .claude/memory.md to reflect every change made this turn — new files, modified logic, UI changes, bug fixes, decisions. Do not skip this step.\"}'",
+            "statusMessage": "Updating memory..."
+          }
+        ]
+      }
+    ]
+  }
+}
