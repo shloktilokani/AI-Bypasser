@@ -17,7 +17,7 @@ nltk.download('stopwords'); \
 nltk.download('brown'); \
 "
 
-COPY app.py paraphraser.py ./
+COPY app.py paraphraser.py humanizer.py ./
 
 EXPOSE 8080
 
