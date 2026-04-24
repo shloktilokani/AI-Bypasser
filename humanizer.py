@@ -166,8 +166,8 @@ def remove_filler(text: str) -> str:
     """Strip known AI filler phrases from text."""
     for pattern, replacement in FILLER_PATTERNS:
         text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
-    # Clean up double spaces left behind
-    text = re.sub(r"  +", " ", text).strip()
+    # Collapse mid-line double spaces only — preserve leading indentation
+    text = re.sub(r"(?m)(?<=\S)  +", " ", text)
     return text
 
 
@@ -305,50 +305,84 @@ def synonym_swap(sentence: str, intensity: float = 0.3) -> str:
     return text
 
 
-# ── Main humanize function ────────────────────────────────────────────────────
+# ── Format-preserving processor ──────────────────────────────────────────────
 
-def humanize(text: str, intensity: float = 0.3) -> str:
-    """
-    Apply the full humanization pipeline to input text.
+_BULLET_RE = re.compile(r'^([•\-\*]|\d+[\.\)])\s+')
 
-    Pipeline order (mirrors the guide's editing workflow):
-      1. Expand contractions
-      2. Remove filler phrases
-      3. Tokenize into sentences
-      4. Per-sentence: hedging → opening variation → light synonym swap
-      5. Burstiness injection across sentence list
-      6. Transition diversification on full text
-      7. Final cleanup
-    """
-    # 1. Expand contractions
-    text = _expand_contractions(text)
 
-    # 2. Remove filler
-    text = remove_filler(text)
-
-    # 3. Sentence tokenization
-    sentences = sent_tokenize(text)
-
-    # 4. Per-sentence transforms
+def _apply_to_line(line: str, intensity: float) -> str:
+    """Run the per-sentence humanization pipeline on a single line's content."""
+    sentences = sent_tokenize(line)
     processed = []
     for sent in sentences:
         s = inject_hedging(sent)
         s = vary_opening(s)
         s = synonym_swap(s, intensity)
-        # Fix spacing
         s = re.sub(r" ([,.!?;:])", r"\1", s)
         processed.append(s)
-
-    # 5. Burstiness
     processed = inject_burstiness(processed)
+    return " ".join(processed)
 
-    # 6. Rejoin and diversify transitions
-    output = " ".join(processed)
+
+def _process_preserving_format(text: str, intensity: float) -> str:
+    """
+    Apply humanization while preserving:
+    - Paragraph breaks  (\n\n)
+    - Line breaks       (\n)
+    - Leading indentation
+    - Bullet / list prefixes (•, -, *, 1., 1))
+    - Blank lines
+    - Punctuation
+    """
+    result_paragraphs = []
+
+    for para in text.split("\n\n"):
+        result_lines = []
+        for line in para.split("\n"):
+            if not line.strip():
+                result_lines.append(line)
+                continue
+
+            # Preserve leading whitespace
+            indent = line[: len(line) - len(line.lstrip())]
+            content = line[len(indent):]
+
+            # Preserve bullet/list prefix
+            bm = _BULLET_RE.match(content)
+            prefix = bm.group(0) if bm else ""
+            content = content[len(prefix):]
+
+            if content.strip():
+                content = _apply_to_line(content, intensity)
+
+            result_lines.append(indent + prefix + content)
+
+        result_paragraphs.append("\n".join(result_lines))
+
+    return "\n\n".join(result_paragraphs)
+
+
+# ── Main humanize function ────────────────────────────────────────────────────
+
+def humanize(text: str, intensity: float = 0.3) -> str:
+    """
+    Apply the full humanization pipeline to input text, preserving all formatting.
+
+    Pipeline:
+      1. Expand contractions
+      2. Remove filler phrases
+      3. Per-paragraph → per-line → per-sentence: hedging, opening variation,
+         synonym swap, burstiness injection
+      4. Transition diversification on full text
+      5. Final cleanup
+    """
+    # Steps 1-2 are regex-based and safe to run on the full text
+    text = _expand_contractions(text)
+    text = remove_filler(text)
+
+    # Steps 3-4: format-preserving sentence-level transforms
+    output = _process_preserving_format(text, intensity)
     output = diversify_transitions(output)
 
-    # 7. Capitalise first char, clean spaces
-    output = re.sub(r"  +", " ", output).strip()
-    if output:
-        output = output[0].upper() + output[1:]
-
+    output = re.sub(r"(?m)(?<=\S)  +", " ", output).strip()
     return output
