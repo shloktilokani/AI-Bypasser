@@ -204,13 +204,63 @@ def transition_swap(text: str) -> str:
     return text
 
 
+def _apply_to_line(line: str, intensity: float) -> str:
+    """Process a single line's text content, sentence by sentence."""
+    sentences = sent_tokenize(line)
+    processed = []
+    for sent in sentences:
+        s = restructure_sentence(sent)
+        s = synonym_swap(s, intensity)
+        processed.append(s)
+    return " ".join(processed)
+
+
+def _process_preserving_format(text: str, intensity: float) -> str:
+    """
+    Apply paraphrasing while preserving:
+    - Paragraph breaks  (\n\n)
+    - Line breaks       (\n)
+    - Leading indentation
+    - Bullet / list prefixes (•, -, *, 1., 1))
+    - Blank lines
+    - Punctuation
+    """
+    bullet_re = re.compile(r'^([•\-\*]|\d+[\.\)])\s+')
+    result_paragraphs = []
+
+    for para in text.split("\n\n"):
+        result_lines = []
+        for line in para.split("\n"):
+            if not line.strip():
+                result_lines.append(line)
+                continue
+
+            # Preserve leading whitespace
+            indent = line[: len(line) - len(line.lstrip())]
+            content = line[len(indent):]
+
+            # Preserve bullet/list prefix
+            bm = bullet_re.match(content)
+            prefix = bm.group(0) if bm else ""
+            content = content[len(prefix):]
+
+            if content.strip():
+                content = _apply_to_line(content, intensity)
+
+            result_lines.append(indent + prefix + content)
+
+        result_paragraphs.append("\n".join(result_lines))
+
+    return "\n\n".join(result_paragraphs)
+
+
 def paraphrase(text: str, intensity: float = 0.5, variants: int = 1) -> list[str]:
     """
-    Paraphrase input text.
+    Paraphrase input text, preserving all original formatting.
 
     Args:
         text:      The input text to paraphrase.
-        intensity: Fraction of eligible words to replace with synonyms (0.0–1.0).
+        intensity: Fraction of eligible words to replace with synonyms (0.0-1.0).
         variants:  Number of different paraphrase variants to generate.
 
     Returns:
@@ -219,22 +269,9 @@ def paraphrase(text: str, intensity: float = 0.5, variants: int = 1) -> list[str
     intensity = max(0.0, min(1.0, intensity))
     results = []
 
-    sentences = sent_tokenize(text)
-
     for _ in range(variants):
-        paraphrased_sentences = []
-        for sent in sentences:
-            s = restructure_sentence(sent)
-            s = synonym_swap(s, intensity)
-            paraphrased_sentences.append(s)
-
-        output = " ".join(paraphrased_sentences)
+        output = _process_preserving_format(text, intensity)
         output = transition_swap(output)
-
-        # Ensure first character is capitalised
-        if output:
-            output = output[0].upper() + output[1:]
-
         results.append(output)
 
     return results
