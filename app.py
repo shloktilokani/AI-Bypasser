@@ -7,7 +7,7 @@ st.set_page_config(page_title="AI Bypasser", layout="wide")
 
 st.title("AI Bypasser")
 st.caption("Rule-based text rewriting. No AI models.")
-st.caption("Crafted with intention by **Shlok Tilokani** — because your words deserve to sound like yours.")
+st.caption("Crafted with intention by **Shlok Tilokani** — because your thoughts deserve to sound like yours.")
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
