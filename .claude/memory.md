@@ -65,6 +65,8 @@ What AI detectors measure (from the guide):
 - Copy button: `components.html` injected HTML button calling `navigator.clipboard.writeText()`
 - Sidebar has a `st.caption()` below the slider explaining the range and recommending 0.4–0.5 as the sweet spot
 - Ownership credit on its own line below subtitle: two separate `st.caption()` calls — first for the tool description, second for "Crafted with intention by **Shlok Tilokani** — because your words deserve to sound like yours."
+- Global proofreading disclaimer added at the top using `st.success` (with "👀" icon) advising users to review outputs due to the tool's context-blind, rule-based nature.
+- Instructional `st.info` blocks added under the "Paraphraser" and "Humanizer" tabs to explain their specific use cases (Paraphraser: maintains structure, Humanizer: varies structure and removes AI fluff).
 
 Copy button CSS (matches Streamlit native button):
 ```
