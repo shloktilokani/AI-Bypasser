@@ -157,7 +157,7 @@ with tab_hum:
             _copy_button(st.session_state.hum_result)
 
 st.markdown("---")
-st.caption(
+st.warning(
     "**Disclaimer:** This tool is a rule-based writing aid — it helps give clearer form to ideas that are already yours. "
     "The words may be restructured, but the thinking, arguments, and intellectual substance must originate with you. "
     "This tool is not designed to fabricate ideas, misrepresent authorship, or circumvent academic integrity standards. "
