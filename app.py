@@ -9,6 +9,14 @@ st.title("AI Bypasser")
 st.caption("Rule-based text rewriting. No AI models.")
 st.caption("Crafted with intention by **Shlok Tilokani** — because your thoughts deserve to sound like yours.")
 
+st.success(
+    "**Please review your output before finalizing.** This tool uses rule-based rewriting rather "
+    "than AI to process your text. Because it doesn't understand context, it may occasionally "
+    "choose an unnatural synonym or create a slightly awkward sentence structure. A quick "
+    "read-through will help you catch and smooth out these minor bumps.",
+    icon="👀"
+)
+
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.header("Settings")
@@ -149,7 +157,7 @@ with tab_hum:
             _copy_button(st.session_state.hum_result)
 
 st.markdown("---")
-st.caption(
+st.warning(
     "**Disclaimer:** This tool is a rule-based writing aid — it helps give clearer form to ideas that are already yours. "
     "The words may be restructured, but the thinking, arguments, and intellectual substance must originate with you. "
     "This tool is not designed to fabricate ideas, misrepresent authorship, or circumvent academic integrity standards. "
