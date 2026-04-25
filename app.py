@@ -62,6 +62,7 @@ def _copy_button(text: str) -> None:
 
 # ── Tab 1: Paraphraser ───────────────────────────────────────────────────────────
 with tab_syn:
+    st.info("**Maintains your original sentence structure and flow but swaps out individual vocabulary words for synonyms.** Best used when you want to bypass standard plagiarism checkers without changing the length or rhythm of your text.")
     col_in, col_out = st.columns(2, gap="medium")
 
     with col_in:
@@ -106,6 +107,7 @@ with tab_syn:
 
 # ── Tab 2: Humanizer ──────────────────────────────────────────────────────────
 with tab_hum:
+    st.info("**Actively restructures your writing by varying sentence lengths, deleting common AI fluff, and changing how sentences open.** Best used when you need to bypass AI detectors (like GPTZero) that look for predictable, machine-generated patterns.")
     col_in2, col_out2 = st.columns(2, gap="medium")
 
     with col_in2:
